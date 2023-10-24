@@ -1,0 +1,26 @@
+<script>
+    let name = 'world';
+let prompt = 'a dog';
+let url;
+
+async function makePrediction() {
+    let input = { prompt };
+    if (url) { input['image'] = url }
+    const response = await fetch('http://localhost:5001/predictions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ input })
+    });
+
+    const data = await response.json();
+    url = data.output
+    setTimeout(makePrediction, 100);
+}
+
+makePrediction();
+</script>
+
+    < input type = "text" bind: value = { prompt } />
+        <img src={ url } />
