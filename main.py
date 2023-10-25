@@ -16,9 +16,8 @@ class Predictor(BasePredictor):
             custom_revision="main",
         )
         self.txt2img.to(torch_device="cpu", torch_dtype=torch.float32).to("mps:0")
-        self.img2img = DiffusionPipeline.from_pretrained(
+        self.img2img = LatentConsistencyModelImg2ImgPipeline(
             "SimianLuo/LCM_Dreamshaper_v7",
-            custom_pipeline="latent_consistency_img2img.py",
         ).to("mps:0")
 
     def predict(
@@ -68,7 +67,7 @@ class Predictor(BasePredictor):
 
     def _save_result(self, result):
         timestamp = time.strftime("%Y%m%d-%H%M%S")
-        output_path = f"out-{timestamp}.png"
+        output_path = f"out-{timestamp}.jpg"
         result.save(output_path)
         return output_path
 
@@ -83,23 +82,27 @@ def main():
             output_path = args.image
             while True:
                 output_path = predictor.predict(
-                    args.prompt,
-                    args.width,
-                    args.height,
-                    args.steps,
-                    args.seed,
-                    output_path,
+                    prompt=args.prompt,
+                    width=args.width,
+                    height=args.height,
+                    steps=args.steps,
+                    seed=args.seed,
+                    strength=args.strength,
+                    image=output_path,
                 )
                 print(f"Output image saved to: {output_path}")
-                f = open("index.html", "w")
-                f.write('<img src="' + output_path + '">')
-                f.close()
 
         except KeyboardInterrupt:
             print("\nStopped by user.")
     else:
         output_path = predictor.predict(
-            args.prompt, args.width, args.height, args.steps, args.seed
+            prompt=args.prompt,
+            width=args.width,
+            height=args.height,
+            steps=args.steps,
+            seed=args.seed,
+            strength=args.strength,
+            image=args.image,
         )
         print(f"Output image saved to: {output_path}")
 
@@ -127,7 +130,13 @@ def parse_args():
         "--image",
         type=str,
         default=None,
-        help="The path to the image to be used as a base.",
+        help="The path to the image when doing img2img.",
+    )
+    parser.add_argument(
+        "--strength",
+        type=float,
+        default=0.5,
+        help="The strength of the prompt in when doing img2img.",
     )
     parser.add_argument(
         "--continuous", action="store_true", help="Enable continuous generation."
