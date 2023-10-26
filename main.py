@@ -14,10 +14,10 @@ class Predictor(BasePredictor):
             "SimianLuo/LCM_Dreamshaper_v7",
             custom_pipeline="latent_consistency_txt2img",
             custom_revision="main",
-        )
-        self.txt2img.to(torch_device="cpu", torch_dtype=torch.float32).to("mps:0")
-        self.img2img = LatentConsistencyModelImg2ImgPipeline(
+        ).to("mps:0")
+        self.img2img = DiffusionPipeline.from_pretrained(
             "SimianLuo/LCM_Dreamshaper_v7",
+            custom_pipeline="latent_consistency_img2img.py",
         ).to("mps:0")
 
     def predict(
