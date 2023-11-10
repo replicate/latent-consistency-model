@@ -11,9 +11,6 @@ class Predictor:
     def _load_model(self):
         model = DiffusionPipeline.from_pretrained(
             "SimianLuo/LCM_Dreamshaper_v7",
-            custom_pipeline="latent_consistency_txt2img",
-            custom_revision="main",
-            revision="fb9c5d"
         )
         model.to(torch_device="cpu", torch_dtype=torch.float32).to('mps:0')
         return model
