@@ -10,7 +10,7 @@ You’ll need:
 
 - a Mac with an M1 or M2 chip
 - 16GB RAM or more
-- macOS 12.3 or higher
+- macOS 13.0 or higher
 - Python 3.10 or above
 
 ## Install
